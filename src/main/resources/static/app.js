@@ -30,26 +30,25 @@ function fetchInput() {
     else {$("#Volum_Error").html("")}
 
     if (validation) {
-        pakke = {
-            lid,
-            eier,
-            vekt,
-            volum
+        let pakke = {
+            lid:lid,
+            eier:eier,
+            vekt:vekt,
+            volum:volum
         };
         console.log(pakke)
-        /*$.ajax({
-            type:'post',
+        $.ajax({
+            type:'POST',
             url:'/lagrepakke',
-            async:false,
-            data:JSON.stringify(pakke),
+            data: JSON.stringify(pakke),
             contentType:"application/json",
-            dataType:"json",
+            traditional: true,
             success: function(result,status,xhr){
                 console.log(result);
+                $("#informasjon").html(result)
             }
-        });*/
-        $.post("/lagrepakke", pakke, function(){console.log("added")});
-        $("#informasjon").html("Registreringen var vellykket!")
+        });
+        //$.post("/lagrepakke", pakke, function(){console.log()});
     }
     else{$("#informasjon").html("Noe gikk galt under valideringen av pakken.")}
 }
