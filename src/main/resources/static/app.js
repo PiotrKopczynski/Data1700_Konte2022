@@ -52,3 +52,28 @@ function fetchInput() {
     }
     else{$("#informasjon").html("Noe gikk galt under valideringen av pakken.")}
 }
+
+$(function() {
+    $("#registrer").click(function() {
+        html = "<table><tr></tr><th>PID</th><th>LID</th><th>Eier</th><th>Vekt</th><th>Volum</th></tr>"
+        $.get("/hentallepakker", function (pakker) {
+            for (let pakke of pakker) {
+                html += "<tr>" +
+                    "<th>" + pakke.pid + "</th>" +
+                    "<th>" + pakke.lid + "</th>" +
+                    "<th>" + pakke.eier + "</th>" +
+                    "<th>" + pakke.vekt + "</th>" +
+                    "<th>" + pakke.volum + "</th>" +
+                    "</tr>";
+            }
+            html += "<table>"
+            $("#pakkeliste").html(html)
+        });
+    });
+});
+
+function loggUt() {
+    $.get("/loggUt", function() {
+        window.location.href = "index.html";
+    });
+}

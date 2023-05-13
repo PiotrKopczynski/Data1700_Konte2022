@@ -5,18 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
 @RestController
-public class Controller {
+public class PakkeController {
 
     @Autowired
     PakkeRepository pakkeRepository;
 
-    Logger logger = LoggerFactory.getLogger(Controller.class);
+    private Logger logger = LoggerFactory.getLogger(PakkeController.class);
 
     @PostMapping("/lagrepakke")
     public String lagrepakke(@RequestBody Pakke pakke) {
@@ -32,6 +30,13 @@ public class Controller {
             System.out.println(e);
             return "Programmet feilet under lagringen av pakken!.";
         }
+    }
+
+    @GetMapping("/hentallepakker")
+    public List<Pakke> hentallepakker() {
+        List<Pakke> pakkeList = pakkeRepository.findAll();
+        System.out.println(pakkeList);
+        return pakkeList;
     }
 
     private boolean validerPakke(Pakke pakke) {
