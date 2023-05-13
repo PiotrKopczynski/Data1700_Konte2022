@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Pakke")
+@Table
 public class Pakke {
-
     @Id
+    @GeneratedValue
+    private Integer pid;
+
     private Integer lid;
 
     private String eier;
