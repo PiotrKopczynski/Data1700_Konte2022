@@ -54,26 +54,43 @@ function fetchInput() {
 }
 
 $(function() {
-    $("#registrer").click(function() {
-        html = "<table><tr></tr><th>PID</th><th>LID</th><th>Eier</th><th>Vekt</th><th>Volum</th></tr>"
+    $("#visPakker").click(function() {
         $.get("/hentallepakker", function (pakker) {
-            for (let pakke of pakker) {
-                html += "<tr>" +
-                    "<th>" + pakke.pid + "</th>" +
-                    "<th>" + pakke.lid + "</th>" +
-                    "<th>" + pakke.eier + "</th>" +
-                    "<th>" + pakke.vekt + "</th>" +
-                    "<th>" + pakke.volum + "</th>" +
-                    "</tr>";
+            if(!pakker) {
+                $("#pakkeliste").html("Du må være innlogget for å se pakkeliste!")
             }
-            html += "<table>"
-            $("#pakkeliste").html(html)
+            else {
+                html = "<table><tr></tr><th>PID</th><th>LID</th><th>Eier</th><th>Vekt</th><th>Volum</th></tr>"
+                for (let pakke of pakker) {
+                    html += "<tr>" +
+                        "<th>" + pakke.pid + "</th>" +
+                        "<th>" + pakke.lid + "</th>" +
+                        "<th>" + pakke.eier + "</th>" +
+                        "<th>" + pakke.vekt + "</th>" +
+                        "<th>" + pakke.volum + "</th>" +
+                        "</tr>";
+                }
+                html += "<table>"
+                $("#pakkeliste").html(html)
+            }
         });
     });
 });
 
 function loggUt() {
-    $.get("/loggUt", function() {
-        window.location.href = "index.html";
+    console.log("Logg ut funker.")
+    $.get("/loggUt", function() {window.location.href = "index.html";});
+}
+
+function statistikk() {
+    $.get("/genererStatistikk", function (data) {
+        $("#statistikk").html(data);
     });
 }
+
+$(function() {
+    $("#lager").click(function() {
+        $.get("/genererLagere", function () {
+        });
+    });
+});

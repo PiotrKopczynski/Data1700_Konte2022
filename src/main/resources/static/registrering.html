@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="app.js"></script>
+    <title>Title</title>
+</head>
+<body>
+<h1>Registrer ny pakke</h1>
+<table>
+  <tr>
+    <td>
+      <label for="LID">LID</label>
+      <input type="text" id="LID">
+      <span id="LID_Error" style="color: red;"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="Eier">Eier</label>
+      <input type="text" id="Eier">
+      <span id="Eier_Error" style="color: red;"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="Vekt">Vekt</label>
+      <input type="text" id="Vekt">
+      <span id="Vekt_Error" style="color: red;"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="Volum">Volum</label>
+      <input type="text" id="Volum">
+      <span id="Volum_Error" style="color: red;"></span>
+    </td>
+  </tr>
+</table>
+<button id="registrer" onclick="fetchInput()">Registrer</button><br>
+<button id="visPakker">Vis Pakker</button>
+<div id="informasjon">Bruk knappen over til å registrere enn pakke.</div>
+<div id=pakkeliste></div>
+<button id="lager">Opprett Lagere</button>
+<button id="statistikkKnapp" onclick="statistikk()">Vis Lagerstatistikk</button>
+<div id=statistikk></div>
+<button id="loggut" onclick="loggUt()">Logg ut</button>
+<div id="feil" style="color: red"></div>
+</body>
+</html>
