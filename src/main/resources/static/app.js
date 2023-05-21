@@ -1,11 +1,15 @@
+//Function that get info out of inputs
 function fetchInput() {
     let validation = true;
 
     let lid = parseInt($("#LID").val());
+    //Validation of inputs
     if(isNaN(lid) || lid < 0) {
         validation = false;
+        //Error messege is showed next to inputs
         $("#LID_Error").html("Feil i LID feltet! Skriv inn et positivt tall!");
     }
+    //Error messege is wiped out
     else {$("#LID_Error").html("")};
 
     let eier = $("#Eier").val();
@@ -29,6 +33,7 @@ function fetchInput() {
     }
     else {$("#Volum_Error").html("")}
 
+    //If validation is completed, an object is created
     if (validation) {
         let pakke = {
             lid:lid,
@@ -38,9 +43,9 @@ function fetchInput() {
         };
         console.log(pakke)
         $.ajax({
-            type:'POST',
+            type:'POST', ///this is where you define the HTTP request you will use
             url:'/lagrepakke',
-            data: JSON.stringify(pakke),
+            data: JSON.stringify(pakke), //we package the information as a JSON in order to send it to the Spring server
             contentType:"application/json",
             traditional: true,
             success: function(result,status,xhr){
@@ -53,13 +58,16 @@ function fetchInput() {
     else{$("#informasjon").html("Noe gikk galt under valideringen av pakken.")}
 }
 
+//Function to see all packages
 $(function() {
     $("#visPakker").click(function() {
         $.get("/hentallepakker", function (pakker) {
+            //If it doesn't receive any packages it will tell us that we need to be logged in to see them
             if(!pakker) {
                 $("#pakkeliste").html("Du må være innlogget for å se pakkeliste!")
             }
             else {
+                //Shows all packages and info about them in a html style table
                 html = "<table><tr></tr><th>PID</th><th>LID</th><th>Eier</th><th>Vekt</th><th>Volum</th></tr>"
                 for (let pakke of pakker) {
                     html += "<tr>" +
@@ -77,18 +85,23 @@ $(function() {
     });
 });
 
+//Logout function
 function loggUt() {
     console.log("Logg ut funker.")
+    //sends you to the ''beginning'' - index.html when clicked
     $.get("/loggUt", function() {window.location.href = "index.html";});
 }
 
+//Function to get lager statistics
 function statistikk() {
     $.get("/genererStatistikk", function (data) {
         $("#statistikk").html(data);
     });
 }
 
+//Generate lager function
 $(function() {
+    //.click(function() - same functionality as onclick() in a html button
     $("#lager").click(function() {
         $.get("/genererLagere", function () {
         });

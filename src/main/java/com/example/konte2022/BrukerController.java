@@ -13,15 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+
+@RestController // - we expose the server's endpoints to whoever wants
 public class BrukerController {
 
+    //Enables sessions
     @Autowired
     private HttpSession session;
 
+    //Creates logger, so we can use it to logg errors or info in the console
     private final Logger logger = LoggerFactory.getLogger(BrukerController.class);
 
-    @Autowired
+    //Creates repositories for bruker, pakke and lager
+    @Autowired //We autowire the repository interface to do all the DML operations on the database
     BrukerRepository brukerRepository;
 
     @Autowired
@@ -30,12 +34,17 @@ public class BrukerController {
     @Autowired
     LagerRepository lagerRepository;
 
-    @GetMapping("/loggInn")
+    @GetMapping("/loggInn") //Login, takes inn brukernavn and passord
     public boolean loggInn(String brukernavn, String passord) {
+        //Finds the user in DB
         List<Bruker> brukere = brukerRepository.findBrukerByBrukernavnLike(brukernavn);
+        //If it finds the user
         if (!brukere.isEmpty()) {
+            //It checks their password
             if(sjekkPassord(passord,brukere.get(0).getPassord())) {
+                //And it starts a session
                 session.setAttribute("loggetInn", brukere.get(0).getBrukernavn());
+                //Logger info about who is logged in
                 logger.info("Bruker " + brukere.get(0).getBrukernavn() + " logged in!");
                 return true;
             }
@@ -43,16 +52,20 @@ public class BrukerController {
         return false;
     }
 
+    //LogOut, ends session when logut button is clicked
     @GetMapping("/loggUt")
     public void loggUt() {
         session.invalidate();
     }
 
 
-    @PostMapping("/registrer")
+    @PostMapping("/registrer") //Register a new user
     public String registrer(@RequestBody Bruker bruker) {
+        //Goes trhough a list to check if a user exist from before
         List<Bruker> brukere = brukerRepository.findBrukerByBrukernavnLike(bruker.getBrukernavn());
         try {
+            //If user doesn't exist from before, the password that they write in will be encrypted
+            //And the user will be saved
             if (brukere.isEmpty()) {
                 String hashPassord = krypterPassord(bruker.getPassord());
                 bruker.setPassord(hashPassord);
@@ -62,6 +75,7 @@ public class BrukerController {
                 return "Brukeren finnes fra før!";
             }
         }
+        //We will get a error message if it fails, and the error wil also be logged with logger.error
         catch(Exception e){
             String errorMessage = "Feil ved registrering av bruker ";
             logger.error(errorMessage + e);
@@ -69,16 +83,23 @@ public class BrukerController {
         }
     }
 
-    @PostMapping("/lagrepakke")
+    @PostMapping("/lagrepakke") //POST here, because we are sending something to the server
+    //Remember @RequestBody when doing an ajax call
     public String lagrepakke(@RequestBody Pakke pakke) {
         System.out.println(pakke);
+        //Try/catch to catch if something goes wrong.
         try{
+            //You can only add a package if you are logged in
             if(sjekkInnlogging()) {
+                //Validation av eier input has to go through before a package can be added
                 if(validerPakke(pakke)) {
+                    //Finds lager through LID
                     Lager lager = lagerRepository.findByLidLike(pakke.getLid());
+                    //and adds a package if lager exsist
                     if(lager != null) {
                         lager.getPakkeList().add(pakke);
                     }
+                    //Saves package
                     pakkeRepository.save(pakke);
                     return "Pakken ble mottatt!";
                 }
@@ -86,12 +107,14 @@ public class BrukerController {
             }
             return "Må være innlogget for å registrere pakker!";
         }
+        //We get a messege if something goes wrong
         catch(Exception e){
             System.out.println(e);
             return "Programmet feilet under lagringen av pakken!.";
         }
     }
 
+    //Validation of eier attribute using regex, it supposed to follow a set of rules to get trough
     private boolean validerPakke(Pakke pakke) {
         String regexEier = "[a-zæøåA-ZÆØÅ.\\-]{2,10}";
         boolean eierOK = pakke.getEier().matches(regexEier);
@@ -100,9 +123,11 @@ public class BrukerController {
         return false;
     }
 
-    @GetMapping("/hentallepakker")
+    @GetMapping("/hentallepakker") //GET here, because we are getting something from the server/DB
+    //Function hentAllePakker, only works if you are logged in
     public List<Pakke> hentallepakker() {
         if(sjekkInnlogging()) {
+            //Finds all the packages
             List<Pakke> pakkeList = pakkeRepository.findAll();
             System.out.println(pakkeList);
             return pakkeList;
@@ -110,14 +135,17 @@ public class BrukerController {
         return null;
     }
 
+    //Takes in password and encrypts it (need to import a library to use it)
     private String krypterPassord(String passord) {
         return BCrypt.hashpw(passord, BCrypt.gensalt(10));
     }
 
+    //Password that was written in input get checked against the hashed password
     private boolean sjekkPassord(String passord, String hashPassord) {
         return BCrypt.checkpw(passord, hashPassord);
     }
 
+    //Checks if a user is logged in
     public boolean sjekkInnlogging() {
         return session.getAttribute("loggetInn") != null;
     }

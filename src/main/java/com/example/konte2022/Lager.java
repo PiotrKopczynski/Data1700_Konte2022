@@ -18,8 +18,9 @@ public class Lager {
     private Integer lid;
     private String navn;
     private String adresse;
-    @OneToMany
-    @JoinColumn(name="lid")
+    @OneToMany //Relation between lager and pakke
+    @JoinColumn(name="lid") //Gets rid of the "joined" table that gets generated when using relations. LID is a FK
+    //Needs to put a pakkelist in Lager class, because of relations
     private List<Pakke> pakkeList;
 
     public Lager(String navn, String adresse) {
